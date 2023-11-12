@@ -6,47 +6,44 @@ CITY_DATA = { 'chicago': 'chicago.csv',
               'new york city': 'new_york_city.csv',
               'washington': 'washington.csv' }
 
+def validate_city_input(city):
+    valid_cities = ['chicago', 'new york city', 'washington']
+    return city.lower() in valid_cities
+
+def validate_month_input(month):
+    valid_months = ['all', 'january', 'february', 'march', 'april', 'may', 'june']
+    return month.lower() in valid_months
+
+def validate_day_input(day):
+    valid_days = ['all', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+    return day.lower() in valid_days
+
 def get_filters():
     """
-    Asks the user to specify a city, month, and day to analyze.
-
-    Returns:
+    Loads data for the specified city and filters by month and day if applicable.
+    Args:
         (str) city - name of the city to analyze
         (str) month - name of the month to filter by, or "all" to apply no month filter
         (str) day - name of the day of the week to filter by, or "all" to apply no day filter
+    Returns:
+        df - Pandas DataFrame containing city data filtered by month and day
     """
     print('Hello! Let\'s explore some US bikeshare data!')
 
-    # Define valid city names in lowercase
-    valid_cities = ['chicago', 'new york city', 'washington']
-
-    # Get user input for the city (chicago, new york city, washington)
-    while True:
+    city = input("Enter the name of the city (Chicago, New York City, Washington): ").lower()
+    while not validate_city_input(city):
+        print("Invalid input. Please choose a valid city.")
         city = input("Enter the name of the city (Chicago, New York City, Washington): ").lower()
-        if city in valid_cities:
-            break
-        else:
-            print("Invalid input. Please choose a valid city.")
 
-    # Define valid months and days in lowercase
-    valid_months = ['all', 'january', 'february', 'march', 'april', 'may', 'june']
-    valid_days = ['all', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
-
-    # Get user input for the month (all, january, february, ..., june)
-    while True:
+    month = input("Enter the name of the month (all, January, February, ..., June): ").lower()
+    while not validate_month_input(month):
+        print("Invalid input. Please choose a valid month.")
         month = input("Enter the name of the month (all, January, February, ..., June): ").lower()
-        if month in valid_months:
-            break
-        else:
-            print("Invalid input. Please choose a valid month.")
 
-    # Get user input for the day of the week (all, Monday, Tuesday, ..., Sunday)
-    while True:
+    day = input("Enter the name of the day of the week (all, Monday, Tuesday, ..., Sunday): ").lower()
+    while not validate_day_input(day):
+        print("Invalid input. Please choose a valid day.")
         day = input("Enter the name of the day of the week (all, Monday, Tuesday, ..., Sunday): ").lower()
-        if day in valid_days:
-            break
-        else:
-            print("Invalid input. Please choose a valid day.")
 
     print('-'*40)
     return city, month, day
