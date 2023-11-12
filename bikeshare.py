@@ -48,6 +48,13 @@ def get_filters():
     print('-'*40)
     return city, month, day
 
+def validate_and_load_city(city):
+    valid_cities = list(CITY_DATA.keys())
+    city = city.lower()
+    if city not in valid_cities:
+        raise ValueError("Invalid city. Please choose a valid city.")
+    return pd.read_csv(CITY_DATA[city])
+
 def load_data(city, month, day):
     """
     Loads data for the specified city and filters by month and day if applicable.
@@ -59,39 +66,18 @@ def load_data(city, month, day):
     Returns:
         df - Pandas DataFrame containing city data filtered by month and day
     """
-    
-    # Validate the city input and make it case-insensitive
-    valid_cities = list(CITY_DATA.keys())
-    city = city.lower()
-    if city not in valid_cities:
-        raise ValueError("Invalid city. Please choose a valid city.")
+    df = validate_and_load_city(city)
 
-    # Load data file into a DataFrame
-    filename = CITY_DATA[city]
-    df = pd.read_csv(filename)
-
-    # Convert the "Start Time" column to datetime
     df['Start Time'] = pd.to_datetime(df['Start Time'])
-
-    # Extract month and day of the week from Start Time to create new columns
     df['month'] = df['Start Time'].dt.month
     df['day_of_week'] = df['Start Time'].dt.strftime('%A')
+    df['hour'] = df['Start Time'].dt.hour
 
-    # Filter by month if applicable
     if month != 'all':
-        valid_months = ['january', 'february', 'march', 'april', 'may', 'june']
-        month = month.lower()
-        if month not in valid_months:
-            raise ValueError("Invalid month. Please choose a valid month.")
-        month_num = valid_months.index(month) + 1
+        month_num = validate_month_input(month)
         df = df[df['month'] == month_num]
 
-    # Filter by day of the week if applicable
     if day != 'all':
-        valid_days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
-        day = day.lower()
-        if day not in valid_days:
-            raise ValueError("Invalid day. Please choose a valid day.")
         df = df[df['day_of_week'] == day.title()]
 
     return df
