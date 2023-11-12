@@ -6,50 +6,54 @@ CITY_DATA = { 'chicago': 'chicago.csv',
               'new york city': 'new_york_city.csv',
               'washington': 'washington.csv' }
 
+def validate_city_input(city):
+    valid_cities = ['chicago', 'new york city', 'washington']
+    return city.lower() in valid_cities
+
+def validate_month_input(month):
+    valid_months = ['all', 'january', 'february', 'march', 'april', 'may', 'june']
+    return month.lower() in valid_months
+
+def validate_day_input(day):
+    valid_days = ['all', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+    return day.lower() in valid_days
+
 def get_filters():
     """
-    Asks the user to specify a city, month, and day to analyze.
-
-    Returns:
+    Loads data for the specified city and filters by month and day if applicable.
+    Args:
         (str) city - name of the city to analyze
         (str) month - name of the month to filter by, or "all" to apply no month filter
         (str) day - name of the day of the week to filter by, or "all" to apply no day filter
+    Returns:
+        df - Pandas DataFrame containing city data filtered by month and day
     """
     print('Hello! Let\'s explore some US bikeshare data!')
 
-    # Define valid city names in lowercase
-    valid_cities = ['chicago', 'new york city', 'washington']
-
-    # Get user input for the city (chicago, new york city, washington)
-    while True:
+    city = input("Enter the name of the city (Chicago, New York City, Washington): ").lower()
+    while not validate_city_input(city):
+        print("Invalid input. Please choose a valid city.")
         city = input("Enter the name of the city (Chicago, New York City, Washington): ").lower()
-        if city in valid_cities:
-            break
-        else:
-            print("Invalid input. Please choose a valid city.")
 
-    # Define valid months and days in lowercase
-    valid_months = ['all', 'january', 'february', 'march', 'april', 'may', 'june']
-    valid_days = ['all', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
-
-    # Get user input for the month (all, january, february, ..., june)
-    while True:
+    month = input("Enter the name of the month (all, January, February, ..., June): ").lower()
+    while not validate_month_input(month):
+        print("Invalid input. Please choose a valid month.")
         month = input("Enter the name of the month (all, January, February, ..., June): ").lower()
-        if month in valid_months:
-            break
-        else:
-            print("Invalid input. Please choose a valid month.")
 
-    # Get user input for the day of the week (all, Monday, Tuesday, ..., Sunday)
-    while True:
+    day = input("Enter the name of the day of the week (all, Monday, Tuesday, ..., Sunday): ").lower()
+    while not validate_day_input(day):
+        print("Invalid input. Please choose a valid day.")
         day = input("Enter the name of the day of the week (all, Monday, Tuesday, ..., Sunday): ").lower()
-        if day in valid_days:
-            break
-        else:
-            print("Invalid input. Please choose a valid day.")
 
     print('-'*40)
     return city, month, day
+
+def validate_and_load_city(city):
+    valid_cities = list(CITY_DATA.keys())
+    city = city.lower()
+    if city not in valid_cities:
+        raise ValueError("Invalid city. Please choose a valid city.")
+    return pd.read_csv(CITY_DATA[city])
 
 def load_data(city, month, day):
     """
@@ -62,39 +66,18 @@ def load_data(city, month, day):
     Returns:
         df - Pandas DataFrame containing city data filtered by month and day
     """
-    
-    # Validate the city input and make it case-insensitive
-    valid_cities = list(CITY_DATA.keys())
-    city = city.lower()
-    if city not in valid_cities:
-        raise ValueError("Invalid city. Please choose a valid city.")
+    df = validate_and_load_city(city)
 
-    # Load data file into a DataFrame
-    filename = CITY_DATA[city]
-    df = pd.read_csv(filename)
-
-    # Convert the "Start Time" column to datetime
     df['Start Time'] = pd.to_datetime(df['Start Time'])
-
-    # Extract month and day of the week from Start Time to create new columns
     df['month'] = df['Start Time'].dt.month
     df['day_of_week'] = df['Start Time'].dt.strftime('%A')
+    df['hour'] = df['Start Time'].dt.hour
 
-    # Filter by month if applicable
     if month != 'all':
-        valid_months = ['january', 'february', 'march', 'april', 'may', 'june']
-        month = month.lower()
-        if month not in valid_months:
-            raise ValueError("Invalid month. Please choose a valid month.")
-        month_num = valid_months.index(month) + 1
+        month_num = validate_month_input(month)
         df = df[df['month'] == month_num]
 
-    # Filter by day of the week if applicable
     if day != 'all':
-        valid_days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
-        day = day.lower()
-        if day not in valid_days:
-            raise ValueError("Invalid day. Please choose a valid day.")
         df = df[df['day_of_week'] == day.title()]
 
     return df
