@@ -20,7 +20,7 @@ In this project, Python is used to explore data related to bike share systems fo
 - [Divvy Data](https://divvybikes.com/system-data)
 - [pandas.to_datetime](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.to_datetime.html)
 - [API reference](https://pandas.pydata.org/pandas-docs/stable/reference/index.html)
-
+- [NumPy Documentation](https://numpy.org/doc/stable/)
 ## Project Overview
 **Overview:**
 Over the past decade, bicycle-sharing systems have been growing in number and popularity in cities across the world. This project uses data provided by Motivate, a bike share system provider, to uncover bike share usage patterns in Chicago, New York City, and Washington, DC.
